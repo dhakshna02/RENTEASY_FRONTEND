@@ -95,20 +95,20 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
   }, [theme]);
 
   const categories = [
-    "Laptop",
-    "Headphone",
-    "Mobile",
-    "Electronics",
-    "Toys",
-    "Fashion",
+    "sports",
+    "Sedan",
+    "Suv",
+    "Hatchback",
+    "Crossover",
+    "HyperSports",
   ];
   return (
     <>
       <header>
         <nav className="navbar navbar-expand-lg fixed-top">
           <div className="container-fluid">
-            <a className="navbar-brand" href="https://telusko.com/">
-              Telusko
+            <a className="navbar-brand" >
+               RentEasy
             </a>
             <button
               className="navbar-toggler"

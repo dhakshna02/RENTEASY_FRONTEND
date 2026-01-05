@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+     import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AppContext from "../Context/Context";
@@ -8,9 +8,9 @@ const Home = ({ selectedCategory }) => {
   const { data, isError, addToCart, refreshData } = useContext(AppContext);
   const [products, setProducts] = useState([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
-
+     
   useEffect(() => {
-    if (!isDataFetched) {
+    if (!isDataFetched) {     
       refreshData();
       setIsDataFetched(true);
     }
@@ -18,12 +18,12 @@ const Home = ({ selectedCategory }) => {
 
   useEffect(() => {
     if (data && data.length > 0) {
-      const fetchImagesAndUpdateProducts = async () => {
+      const fetchImagesAndUpdateProducts = async () => {     
         const updatedProducts = await Promise.all(
           data.map(async (product) => {
             try {
               const response = await axios.get(
-                `http://localhost:8080/api/product/${product.id}/image`,
+                `http://localhost:8080/api/product/${product.id}/image`,     
                 { responseType: "blob" }
               );
               const imageUrl = URL.createObjectURL(response.data);
