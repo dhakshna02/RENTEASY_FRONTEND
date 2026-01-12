@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
@@ -10,19 +10,27 @@ import { AppProvider } from "./Context/Context";
 import UpdateProduct from "./components/UpdateProduct";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 
 function App() {
+  // 🛒 CART STATE
   const [cart, setCart] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
 
+  // 📂 CATEGORY STATE
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // 📍 CITY STATE
+  const [selectedCity, setSelectedCity] = useState("Chennai");
+
+  // CATEGORY HANDLER
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     console.log("Selected category:", category);
   };
+
+  // ADD TO CART
   const addToCart = (product) => {
     const existingProduct = cart.find((item) => item.id === product.id);
+
     if (existingProduct) {
       setCart(
         cart.map((item) =>
@@ -39,19 +47,27 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <Navbar onSelectCategory={handleCategorySelect}
-         />
+        {/* ✅ SINGLE NAVBAR (GLOBAL) */}
+        <Navbar
+          onSelectCategory={handleCategorySelect}
+          onCityChange={setSelectedCity}
+        />
+
         <Routes>
           <Route
             path="/"
             element={
-              <Home addToCart={addToCart} selectedCategory={selectedCategory}
+              <Home
+                addToCart={addToCart}
+                selectedCategory={selectedCategory}
+                selectedCity={selectedCity}
               />
             }
           />
+
           <Route path="/add_product" element={<AddProduct />} />
-          <Route path="/product" element={<Product  />} />
-          <Route path="product/:id" element={<Product  />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/update/:id" element={<UpdateProduct />} />
         </Routes>
