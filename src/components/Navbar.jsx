@@ -6,7 +6,6 @@ const Navbar = ({ onSelectCategory, onCityChange }) => {
     return storedTheme ? storedTheme : "light-theme";
   };
 
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [theme, setTheme] = useState(getInitialTheme());
   const [input, setInput] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -23,10 +22,15 @@ const Navbar = ({ onSelectCategory, onCityChange }) => {
   }, [theme]);
 
   // 📂 CATEGORY
+  // const handleCategorySelect = (category) => {
+  //   setSelectedCategory(category);
+  //   onSelectCategory(category);
+  // };
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    onSelectCategory(category);
-  };
+  console.log("Clicked category:", category);
+  onSelectCategory(category);
+};
+
 
   // 📍 CITY (ONLY SEND CLEAN VALUE TO HOME)
   const handleCityChange = (e) => {

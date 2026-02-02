@@ -15,16 +15,16 @@ function App() {
   // 🛒 CART STATE
   const [cart, setCart] = useState([]);
 
-  // 📂 CATEGORY STATE
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  // 📂 CATEGORY STATE (DECLARE ONLY ONCE)
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   // 📍 CITY STATE
   const [selectedCity, setSelectedCity] = useState("Chennai");
 
   // CATEGORY HANDLER
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
     console.log("Selected category:", category);
+    setSelectedCategory(category);
   };
 
   // ADD TO CART
@@ -47,7 +47,7 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        {/* ✅ SINGLE NAVBAR (GLOBAL) */}
+        {/* ✅ SINGLE GLOBAL NAVBAR */}
         <Navbar
           onSelectCategory={handleCategorySelect}
           onCityChange={setSelectedCity}
@@ -58,15 +58,13 @@ function App() {
             path="/"
             element={
               <Home
-                addToCart={addToCart}
                 selectedCategory={selectedCategory}
                 selectedCity={selectedCity}
+                addToCart={addToCart}
               />
             }
           />
-
           <Route path="/add_product" element={<AddProduct />} />
-          <Route path="/product" element={<Product />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/update/:id" element={<UpdateProduct />} />
