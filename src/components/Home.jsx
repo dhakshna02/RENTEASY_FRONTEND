@@ -1,42 +1,71 @@
+
 // import React, { useContext, useEffect, useState } from "react";
 // import { Link } from "react-router-dom";
 // import axios from "axios";
 // import AppContext from "../Context/Context";
-// import Navbar from "./Navbar";
 // import unplugged from "../assets/unplugged.png";
 
-// const Home = ({ selectedCategory }) => {
+// const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
 //   const { isError, addToCart } = useContext(AppContext);
 
-//   // 📍 CITY STATE (default city)
-//  const [city, setCity] = useState("Chennai");
-
 //   // 📦 PRODUCTS STATE
-//    const [products, setProducts] = useState([]);
+//   const [products, setProducts] = useState([]);
+
+//   /* =========================
+//      DEBUG (OPTIONAL)
+//      ========================= */
+//   useEffect(() => {
+//     console.log("Home received category:", selectedCategory);
+//   }, [selectedCategory]);
 
 //   useEffect(() => {
-//   console.log("Home received category:", selectedCategory);
-// }, [selectedCategory]);
-
-
+//     console.log("Home received city:", selectedCity);
+//   }, [selectedCity]);
 
 //   /* =========================
 //      FETCH PRODUCTS BY CITY
 //      ========================= */
+//   // useEffect(() => {
+//   //   if (!selectedCity) return;
+
+//   //   axios
+//   //     .get("http://localhost:8080/api/products/home", {
+//   //       params: { city: selectedCity.trim() },
+//   //     })
+//   //     .then((res) => setProducts(res.data))
+//   //     .catch((error) =>
+//   //       console.error("Error fetching products by city:", error)
+//   //     );
+//   // }, [selectedCity]);
+
 //   useEffect(() => {
-//     if (!city) return;
+//   // 🔍 BACKEND SEARCH
+//   if (searchTerm && searchTerm.trim() !== "") {
+//     console.log("Searching with:", searchTerm);
 
 //     axios
-//       .get("http://localhost:8080/api/products/home", {
-//         params: { city: city.trim() },
+//       .get("http://localhost:8080/api/products/search", {
+//         params: { keyword: searchTerm.trim() },
 //       })
 //       .then((res) => {
 //         setProducts(res.data);
 //       })
-//       .catch((error) => {
-//         console.error("Error fetching products by city:", error);
-//       });
-//   }, [city]);
+//       .catch((err) => console.error("Search error:", err));
+
+//     return;
+//   }
+
+//   // 📍 FETCH BY CITY (DEFAULT)
+//   if (selectedCity) {
+//     axios
+//       .get("http://localhost:8080/api/products/home", {
+//         params: { city: selectedCity.trim() },
+//       })
+//       .then((res) => setProducts(res.data))
+//       .catch((err) => console.error("City fetch error:", err));
+//   }
+// }, [searchTerm, selectedCity]);
+
 
 //   /* =========================
 //      FETCH IMAGES FOR PRODUCTS
@@ -68,22 +97,18 @@
 //     };
 
 //     fetchImagesAndUpdateProducts();
-//   }, [products.length]);
+//   }, [products]);
 
 //   /* =========================
-//      CATEGORY FILTER
+//      CATEGORY FILTER (FRONTEND)
 //      ========================= */
-//   // const filteredProducts = selectedCategory
-//   //   ? products.filter((product) => product.category === selectedCategory)
-//   //   : products;
-
 //   const filteredProducts = selectedCategory
-//   ? products.filter(
-//       (product) =>
-//         product.category.toLowerCase() === selectedCategory.toLowerCase()
-//     )
-//   : products;
-
+//     ? products.filter(
+//         (product) =>
+//           product.category?.toLowerCase() ===
+//           selectedCategory.toLowerCase()
+//       )
+//     : products;
 
 //   /* =========================
 //      ERROR UI
@@ -101,238 +126,151 @@
 //   }
 
 //   return (
-//     <>
-//       {/* ✅ NAVBAR WITH CITY SUPPORT  <Navbar onCityChange={setCity} />. */}
-      
+//     <div
+//       className="grid"
+//       style={{
+//         marginTop: "64px",
+//         display: "grid",
+//         gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+//         gap: "20px",
+//         padding: "20px",
+//       }}
+//     >
+//       {filteredProducts.length === 0 ? (
+//         <h2 className="text-center">No Products Available</h2>
+//       ) : (
+//         filteredProducts.map((product) => {
+//           const { id, brand, name, price, productAvailable, imageUrl } =
+//             product;
 
-//       <div
-//         className="grid"
-//         style={{
-//           marginTop: "64px",
-//           display: "grid",
-//           gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-//           gap: "20px",
-//           padding: "20px",
-//         }}
-//       >
-//         {filteredProducts.length === 0 ? (
-//           <h2
-//             className="text-center"
-//             style={{
-//               display: "flex",
-//               justifyContent: "center",
-//               alignItems: "center",
-//             }}
-//           >
-//             No Products Available
-//           </h2>
-//         ) : (
-//           filteredProducts.map((product) => {
-//             const { id, brand, name, price, productAvailable, imageUrl } =
-//               product;
-
-//             return (
-//               <div
-//                 className="card mb-3"
-//                 key={id}
-//                 style={{
-//                   width: "250px",
-//                   height: "360px",
-//                   boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-//                   borderRadius: "10px",
-//                   overflow: "hidden",
-//                   backgroundColor: productAvailable ? "#fff" : "#ccc",
-//                   display: "flex",
-//                   flexDirection: "column",
-//                   justifyContent: "flex-start",
-//                   alignItems: "stretch",
-//                 }}
+//           return (
+//             <div
+//               className="card mb-3"
+//               key={id}
+//               style={{
+//                 width: "250px",
+//                 height: "360px",
+//                 backgroundColor: productAvailable ? "#fff" : "#ccc",
+//               }}
+//             >
+//               <Link
+//                 to={`/product/${id}`}
+//                 style={{ textDecoration: "none", color: "inherit" }}
 //               >
-//                 <Link
-//                   to={`/product/${id}`}
-//                   style={{ textDecoration: "none", color: "inherit" }}
-//                 >
-//                   <img
-//                     src={imageUrl}
-//                     alt={name}
-//                     style={{
-//                       width: "100%",
-//                       height: "150px",
-//                       objectFit: "cover",
-//                       padding: "5px",
-//                       margin: "0",
-//                       borderRadius: "10px",
-//                     }}
-//                   />
+//                 <img
+//                   src={imageUrl}
+//                   alt={name}
+//                   style={{
+//                     width: "100%",
+//                     height: "150px",
+//                     objectFit: "cover",
+//                   }}
+//                 />
 
-//                   <div
-//                     className="card-body"
-//                     style={{
-//                       flexGrow: 1,
-//                       display: "flex",
-//                       flexDirection: "column",
-//                       justifyContent: "space-between",
-//                       padding: "10px",
+//                 <div className="card-body">
+//                   <h5>{name.toUpperCase()}</h5>
+//                   <i>{"~ " + brand}</i>
+//                   <h5>₹ {price}</h5>
+
+//                   <button
+//                     className="btn btn-primary"
+//                     onClick={(e) => {
+//                       e.preventDefault();
+//                       addToCart(product);
 //                     }}
+//                     disabled={!productAvailable}
 //                   >
-//                     <div>
-//                       <h5
-//                         className="card-title"
-//                         style={{
-//                           margin: "0 0 10px 0",
-//                           fontSize: "1.2rem",
-//                         }}
-//                       >
-//                         {name.toUpperCase()}
-//                       </h5>
-//                       <i
-//                         className="card-brand"
-//                         style={{
-//                           fontStyle: "italic",
-//                           fontSize: "0.8rem",
-//                         }}
-//                       >
-//                         {"~ " + brand}
-//                       </i>
-//                     </div>
-
-//                     <hr className="hr-line" style={{ margin: "10px 0" }} />
-
-//                     <div className="home-cart-price">
-//                       <h5
-//                         className="card-text"
-//                         style={{
-//                           fontWeight: "600",
-//                           fontSize: "1.1rem",
-//                           marginBottom: "5px",
-//                         }}
-//                       >
-//                         <i className="bi bi-currency-rupee"></i>
-//                         {price}
-//                       </h5>
-//                     </div>
-
-//                     <button
-//                       className="btn-hover color-9"
-//                       style={{ margin: "10px 25px 0px" }}
-//                       onClick={(e) => {
-//                         e.preventDefault();
-//                         addToCart(product);
-//                       }}
-//                       disabled={!productAvailable}
-//                     >
-//                       {productAvailable ? "Add to Cart" : "Out of Stock"}
-//                     </button>
-//                   </div>
-//                 </Link>
-//               </div>
-//             );
-//           })
-//         )}
-//       </div>
-//     </>
+//                     {productAvailable ? "Add to Cart" : "Out of Stock"}
+//                   </button>
+//                 </div>
+//               </Link>
+//             </div>
+//           );
+//         })
+//       )}
+//     </div>
 //   );
 // };
 
+// export default Home;
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AppContext from "../Context/Context";
 import unplugged from "../assets/unplugged.png";
 
-const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
+const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
   const { isError, addToCart } = useContext(AppContext);
 
-  // 📦 PRODUCTS STATE
+  // 📦 PRODUCTS (DATA ONLY — NO IMAGES)
   const [products, setProducts] = useState([]);
 
-  /* =========================
-     DEBUG (OPTIONAL)
-     ========================= */
-  useEffect(() => {
-    console.log("Home received category:", selectedCategory);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    console.log("Home received city:", selectedCity);
-  }, [selectedCity]);
+  // 🖼 IMAGE CACHE (IMPORTANT)
+  const [imageMap, setImageMap] = useState({});
 
   /* =========================
-     FETCH PRODUCTS BY CITY
+     FETCH PRODUCTS (SEARCH / CITY)
      ========================= */
-  // useEffect(() => {
-  //   if (!selectedCity) return;
-
-  //   axios
-  //     .get("http://localhost:8080/api/products/home", {
-  //       params: { city: selectedCity.trim() },
-  //     })
-  //     .then((res) => setProducts(res.data))
-  //     .catch((error) =>
-  //       console.error("Error fetching products by city:", error)
-  //     );
-  // }, [selectedCity]);
-
   useEffect(() => {
-  // 🔍 BACKEND SEARCH
-  if (searchTerm && searchTerm.trim() !== "") {
-    console.log("Searching with:", searchTerm);
+    // 🔍 SEARCH (BACKEND)
+    if (searchTerm && searchTerm.trim() !== "") {
+      console.log("Searching with:", searchTerm);
 
-    axios
-      .get("http://localhost:8080/api/products/search", {
-        params: { keyword: searchTerm.trim() },
-      })
-      .then((res) => {
-        setProducts(res.data);
-      })
-      .catch((err) => console.error("Search error:", err));
+      axios
+        .get("http://localhost:8080/api/products/search", {
+          params: { keyword: searchTerm.trim() },
+        })
+        .then((res) => {
+          setProducts(res.data);
+        })
+        .catch((err) => console.error("Search error:", err));
 
-    return;
-  }
+      return;
+    }
 
-  // 📍 FETCH BY CITY (DEFAULT)
-  if (selectedCity) {
-    axios
-      .get("http://localhost:8080/api/products/home", {
-        params: { city: selectedCity.trim() },
-      })
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("City fetch error:", err));
-  }
-}, [searchTerm, selectedCity]);
-
+    // 📍 CITY FETCH (DEFAULT)
+    if (selectedCity) {
+      axios
+        .get("http://localhost:8080/api/products/home", {
+          params: { city: selectedCity.trim() },
+        })
+        .then((res) => {
+          setProducts(res.data);
+        })
+        .catch((err) => console.error("City fetch error:", err));
+    }
+  }, [searchTerm, selectedCity]);
 
   /* =========================
-     FETCH IMAGES FOR PRODUCTS
+     FETCH IMAGES (NO LOOP)
      ========================= */
   useEffect(() => {
-    if (products.length === 0) return;
+    const fetchImages = async () => {
+      const newImages = {};
 
-    const fetchImagesAndUpdateProducts = async () => {
-      const updatedProducts = await Promise.all(
-        products.map(async (product) => {
+      for (const product of products) {
+        if (!imageMap[product.id]) {
           try {
-            const response = await axios.get(
+            const res = await axios.get(
               `http://localhost:8080/api/product/${product.id}/image`,
               { responseType: "blob" }
             );
-            const imageUrl = URL.createObjectURL(response.data);
-            return { ...product, imageUrl };
-          } catch (error) {
-            console.error(
-              "Error fetching image for product ID:",
-              product.id,
-              error
-            );
-            return { ...product, imageUrl: "" };
+            newImages[product.id] = URL.createObjectURL(res.data);
+          } catch {
+            newImages[product.id] = "";
           }
-        })
-      );
-      setProducts(updatedProducts);
+        }
+      }
+
+      if (Object.keys(newImages).length > 0) {
+        setImageMap((prev) => ({ ...prev, ...newImages }));
+      }
     };
 
-    fetchImagesAndUpdateProducts();
-  }, [products]);
+    if (products.length > 0) {
+      fetchImages();
+    }
+  }, [products]); // ✅ SAFE — no setProducts here
 
   /* =========================
      CATEGORY FILTER (FRONTEND)
@@ -360,6 +298,9 @@ const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
     );
   }
 
+  /* =========================
+     UI
+     ========================= */
   return (
     <div
       className="grid"
@@ -375,8 +316,7 @@ const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
         <h2 className="text-center">No Products Available</h2>
       ) : (
         filteredProducts.map((product) => {
-          const { id, brand, name, price, productAvailable, imageUrl } =
-            product;
+          const { id, brand, name, price, productAvailable } = product;
 
           return (
             <div
@@ -393,7 +333,7 @@ const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <img
-                  src={imageUrl}
+                  src={imageMap[id] || ""}
                   alt={name}
                   style={{
                     width: "100%",
