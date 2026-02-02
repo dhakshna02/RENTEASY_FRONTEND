@@ -240,7 +240,7 @@ import axios from "axios";
 import AppContext from "../Context/Context";
 import unplugged from "../assets/unplugged.png";
 
-const Home = ({ selectedCategory, selectedCity }) => {
+const Home = ({ selectedCategory, selectedCity,searchTerm }) => {
   const { isError, addToCart } = useContext(AppContext);
 
   // 📦 PRODUCTS STATE
@@ -260,18 +260,47 @@ const Home = ({ selectedCategory, selectedCity }) => {
   /* =========================
      FETCH PRODUCTS BY CITY
      ========================= */
-  useEffect(() => {
-    if (!selectedCity) return;
+  // useEffect(() => {
+  //   if (!selectedCity) return;
 
+  //   axios
+  //     .get("http://localhost:8080/api/products/home", {
+  //       params: { city: selectedCity.trim() },
+  //     })
+  //     .then((res) => setProducts(res.data))
+  //     .catch((error) =>
+  //       console.error("Error fetching products by city:", error)
+  //     );
+  // }, [selectedCity]);
+
+  useEffect(() => {
+  // 🔍 BACKEND SEARCH
+  if (searchTerm && searchTerm.trim() !== "") {
+    console.log("Searching with:", searchTerm);
+
+    axios
+      .get("http://localhost:8080/api/products/search", {
+        params: { keyword: searchTerm.trim() },
+      })
+      .then((res) => {
+        setProducts(res.data);
+      })
+      .catch((err) => console.error("Search error:", err));
+
+    return;
+  }
+
+  // 📍 FETCH BY CITY (DEFAULT)
+  if (selectedCity) {
     axios
       .get("http://localhost:8080/api/products/home", {
         params: { city: selectedCity.trim() },
       })
       .then((res) => setProducts(res.data))
-      .catch((error) =>
-        console.error("Error fetching products by city:", error)
-      );
-  }, [selectedCity]);
+      .catch((err) => console.error("City fetch error:", err));
+  }
+}, [searchTerm, selectedCity]);
+
 
   /* =========================
      FETCH IMAGES FOR PRODUCTS
@@ -303,7 +332,7 @@ const Home = ({ selectedCategory, selectedCity }) => {
     };
 
     fetchImagesAndUpdateProducts();
-  }, [products.length]);
+  }, [products]);
 
   /* =========================
      CATEGORY FILTER (FRONTEND)

@@ -26,6 +26,9 @@ function App() {
     console.log("Selected category:", category);
     setSelectedCategory(category);
   };
+  // SEARCH TERM STATE
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   // ADD TO CART
   const addToCart = (product) => {
@@ -49,8 +52,13 @@ function App() {
       <BrowserRouter>
         {/* ✅ SINGLE GLOBAL NAVBAR */}
         <Navbar
+          // onSelectCategory={handleCategorySelect}
+          // onCityChange={setSelectedCity}
+
           onSelectCategory={handleCategorySelect}
-          onCityChange={setSelectedCity}
+        onCityChange={setSelectedCity}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         />
 
         <Routes>
@@ -58,9 +66,14 @@ function App() {
             path="/"
             element={
               <Home
+                // selectedCategory={selectedCategory}
+                // selectedCity={selectedCity}
+                // addToCart={addToCart}
+
                 selectedCategory={selectedCategory}
-                selectedCity={selectedCity}
-                addToCart={addToCart}
+              selectedCity={selectedCity}
+              searchTerm={searchTerm}
+              addToCart={addToCart}
               />
             }
           />

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-const Navbar = ({ onSelectCategory, onCityChange }) => {
+const Navbar = ({ onSelectCategory, 
+                  onCityChange,
+                  searchTerm, 
+                  onSearchChange 
+ }) => {
   const getInitialTheme = () => {
     const storedTheme = localStorage.getItem("theme");
     return storedTheme ? storedTheme : "light-theme";
@@ -125,13 +129,17 @@ const Navbar = ({ onSelectCategory, onCityChange }) => {
 
               {/* 🔍 SEARCH (UI ONLY, NO API HERE) */}
               <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                style={{ width: "180px", height: "36px" }}
-              />
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        console.log("Navbar search:", e.target.value);
+                        onSearchChange(e.target.value);
+                      }}
+                      style={{ width: "180px", height: "36px" }}
+                />
+
             </div>
           </div>
         </nav>
