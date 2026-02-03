@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 
 const Navbar = ({ onSelectCategory, 
                   onCityChange,
@@ -81,6 +83,9 @@ const Navbar = ({ onSelectCategory,
                   </a>
                 </li>
 
+                
+
+
                 <li className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle"
@@ -102,6 +107,12 @@ const Navbar = ({ onSelectCategory,
                       </li>
                     ))}
                   </ul>
+                </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to="/cart">
+                    🛒 Cart
+                  </Link>
                 </li>
               </ul>
 

@@ -270,7 +270,7 @@ const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
     if (products.length > 0) {
       fetchImages();
     }
-  }, [products]); // ✅ SAFE — no setProducts here
+  }, [products.length]); // ✅ SAFE — no setProducts here
 
   /* =========================
      CATEGORY FILTER (FRONTEND)
@@ -347,7 +347,7 @@ const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
                   <i>{"~ " + brand}</i>
                   <h5>₹ {price}</h5>
 
-                  <button
+                  {/* {<button
                     className="btn btn-primary"
                     onClick={(e) => {
                       e.preventDefault();
@@ -356,7 +356,20 @@ const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
                     disabled={!productAvailable}
                   >
                     {productAvailable ? "Add to Cart" : "Out of Stock"}
-                  </button>
+                  </button> } */}
+
+                  <button
+                      className="btn btn-primary"
+                      disabled={!product.productAvailable || product.stockQuantity === 0}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addToCart(product);
+                      }}
+                    >
+                      {product.stockQuantity === 0 ? "Out of Stock" : "Add to Cart"}
+                    </button>
+
+
                 </div>
               </Link>
             </div>
@@ -368,3 +381,178 @@ const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
 };
 
 export default Home;
+
+// button of checkout is not working
+
+// import React, { useContext, useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+// import axios from "axios";
+// import AppContext from "../Context/Context";
+// import unplugged from "../assets/unplugged.png";
+
+// const Home = ({ selectedCategory, selectedCity, searchTerm }) => {
+//   const { isError, addToCart } = useContext(AppContext);
+
+//   // 📦 PRODUCT DATA
+//   const [products, setProducts] = useState([]);
+
+//   // 🖼 IMAGE CACHE (prevents blinking & CPU spike)
+//   const [imageMap, setImageMap] = useState({});
+
+//   /* =========================
+//      FETCH PRODUCTS (SEARCH / CITY)
+//      ========================= */
+//   useEffect(() => {
+//     // 🔍 SEARCH (BACKEND)
+//     if (searchTerm && searchTerm.trim() !== "") {
+//       axios
+//         .get("http://localhost:8080/api/products/search", {
+//           params: { keyword: searchTerm.trim() },
+//         })
+//         .then((res) => setProducts(res.data))
+//         .catch((err) => console.error("Search error:", err));
+//       return;
+//     }
+
+//     // 📍 FETCH BY CITY
+//     if (selectedCity) {
+//       axios
+//         .get("http://localhost:8080/api/products/home", {
+//           params: { city: selectedCity.trim() },
+//         })
+//         .then((res) => setProducts(res.data))
+//         .catch((err) => console.error("City fetch error:", err));
+//     }
+//   }, [searchTerm, selectedCity]);
+
+//   /* =========================
+//      FETCH IMAGES (SAFE)
+//      ========================= */
+//   useEffect(() => {
+//     const fetchImages = async () => {
+//       const newImages = {};
+
+//       for (const product of products) {
+//         if (!imageMap[product.id]) {
+//           try {
+//             const res = await axios.get(
+//               `http://localhost:8080/api/product/${product.id}/image`,
+//               { responseType: "blob" }
+//             );
+//             newImages[product.id] = URL.createObjectURL(res.data);
+//           } catch {
+//             newImages[product.id] = "";
+//           }
+//         }
+//       }
+
+//       if (Object.keys(newImages).length > 0) {
+//         setImageMap((prev) => ({ ...prev, ...newImages }));
+//       }
+//     };
+
+//     if (products.length > 0) {
+//       fetchImages();
+//     }
+//   }, [products.length]); // ✅ NO infinite loop
+
+//   /* =========================
+//      CATEGORY FILTER (FRONTEND)
+//      ========================= */
+//   const filteredProducts = selectedCategory
+//     ? products.filter(
+//         (p) =>
+//           p.category?.toLowerCase() === selectedCategory.toLowerCase()
+//       )
+//     : products;
+
+//   /* =========================
+//      ERROR UI
+//      ========================= */
+//   if (isError) {
+//     return (
+//       <h2 className="text-center" style={{ padding: "18rem" }}>
+//         <img src={unplugged} alt="Error" width="100" />
+//       </h2>
+//     );
+//   }
+
+//   /* =========================
+//      UI
+//      ========================= */
+//   return (
+//     <div
+//       className="grid"
+//       style={{
+//         marginTop: "64px",
+//         display: "grid",
+//         gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+//         gap: "20px",
+//         padding: "20px",
+//       }}
+//     >
+//       {filteredProducts.length === 0 ? (
+//         <h2 className="text-center">No Products Available</h2>
+//       ) : (
+//         filteredProducts.map((product) => {
+//           const {
+//             id,
+//             brand,
+//             name,
+//             price,
+//             productAvailable,
+//             stockQuantity,
+//           } = product;
+
+//           return (
+//             <div
+//               className="card mb-3"
+//               key={id}
+//               style={{
+//                 width: "250px",
+//                 height: "360px",
+//                 backgroundColor:
+//                   productAvailable && stockQuantity > 0 ? "#fff" : "#ccc",
+//               }}
+//             >
+//               {/* ✅ LINK ONLY FOR NAVIGATION */}
+//               <Link
+//                 to={`/product/${id}`}
+//                 style={{ textDecoration: "none", color: "inherit" }}
+//               >
+//                 <img
+//                   src={imageMap[id] || ""}
+//                   alt={name}
+//                   style={{
+//                     width: "100%",
+//                     height: "150px",
+//                     objectFit: "cover",
+//                   }}
+//                 />
+
+//                 <div className="card-body">
+//                   <h5>{name.toUpperCase()}</h5>
+//                   <i>{"~ " + brand}</i>
+//                   <h5>₹ {price}</h5>
+//                 </div>
+//               </Link>
+
+//               {/* ✅ BUTTON OUTSIDE LINK (VERY IMPORTANT) */}
+//               <div style={{ padding: "10px" }}>
+//                 <button
+//                   className="btn btn-primary w-100"
+//                   disabled={!productAvailable || stockQuantity === 0}
+//                   onClick={() => addToCart(product)}
+//                 >
+//                   {stockQuantity === 0 ? "Out of Stock" : "Add to Cart"}
+//                 </button>
+//               </div>
+//             </div>
+//           );
+//         })
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Home;
